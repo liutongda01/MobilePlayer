@@ -18,6 +18,7 @@ public class Titlebar extends LinearLayout implements View.OnClickListener {
     public Titlebar(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
+
     }
 
     @Override
