@@ -24,7 +24,9 @@
             android:launchMode="singleTask">
         </activity>
         <activity android:name=".activity.SystemVideoPlayerActivity"
-            ></activity>
+            >
+
+        </activity>
     </application>
 
 </manifest>
