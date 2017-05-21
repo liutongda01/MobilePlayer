@@ -81,14 +81,13 @@ public class MainActivity extends AppCompatActivity {
         if(tempFragment != currentFragment) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             if(!currentFragment.isAdded()){
-                //把之前的隐藏
                 if(tempFragment != null){
                     ft.hide(tempFragment);
                 }
                 ft.add(R.id.fl_context,currentFragment);
             }else{
                 if(tempFragment != null){
-                    ft.hide(tempFragment);
+                     ft.hide(tempFragment);
                 }
                 ft.show(currentFragment);
             }

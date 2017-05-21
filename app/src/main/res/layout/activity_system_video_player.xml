@@ -6,10 +6,11 @@
     android:gravity="center"
     android:background="#000000">
 
-    <VideoView
+    <view.VideoView
         android:id="@+id/vv"
         android:layout_centerInParent="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    <include layout="@layout/media_controller"/>
 
 </RelativeLayout>

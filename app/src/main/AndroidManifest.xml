@@ -24,7 +24,8 @@
             android:launchMode="singleTask">
         </activity>
         <activity android:name=".activity.SystemVideoPlayerActivity"
-            >
+             android:screenOrientation="landscape"
+             android:theme="@style/myStyle">
 
         </activity>
     </application>
