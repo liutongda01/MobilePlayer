@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
+
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,28 +26,29 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 import domain.MediaItem;
+import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.Vitamio;
 import svntest.mobileplayer.R;
 import utils.Utils.Utils;
 import view.VideoView;
+import view.VitamVideoView;
 
 /**
  * Created by Liutongda on 2017/5/19.
  */
-public class SystemVideoPlayerActivity extends AppCompatActivity implements View.OnClickListener {
+public class VitamVideoPlayerActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int PROGRESS = 0;
     private static final int HIDE_MEDIACONTROLLER = 1;
     private  static  final int SHOW_NET_SPEED = 2;
     private static final int DEFUALT_SCREEN = 0;
     private static final int FULL_SCREEN = 1;
 
-    private VideoView vv;
+    private VitamVideoView vv;
     private ArrayList<MediaItem>mediaItems;
     private Uri uri;
 
@@ -90,7 +91,8 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
 
 
     private void findViews() {
-        setContentView(R.layout.activity_system_video_player);
+        Vitamio.isInitialized(getApplicationContext());
+        setContentView(R.layout.activity_vitamio_video_player);
         llTop = (LinearLayout)findViewById( R.id.ll_top );
         tvName = (TextView)findViewById( R.id.tv_name );
         ivBattery = (ImageView)findViewById( R.id.iv_battery );
@@ -107,7 +109,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         btnStartPause = (Button)findViewById( R.id.btn_start_pause );
         btnNext = (Button)findViewById( R.id.btn_next );
         btnSwitchScreen = (Button)findViewById( R.id.btn_switch_screen );
-        vv = (VideoView)findViewById(R.id.vv);
+        vv = (VitamVideoView)findViewById(R.id.vv);
         ll_buffering = (LinearLayout) findViewById(R.id.ll_buffering);
         tv_net_speed = (TextView) findViewById(R.id.tv_net_speed);
         ll_loading = (LinearLayout)findViewById(R.id.ll_loading);
@@ -207,14 +209,14 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
             switch (msg.what) {
                 case SHOW_NET_SPEED:
                     if(isNetUri) {
-                        String netSpeed = utils.getNetSpeed(SystemVideoPlayerActivity.this);
+                        String netSpeed = utils.getNetSpeed(VitamVideoPlayerActivity.this);
                         tv_loading_net_speed.setText("正在加载中...."+netSpeed);
                         tv_net_speed.setText("正在缓冲...."+netSpeed);
                         sendEmptyMessageDelayed(SHOW_NET_SPEED,1000);
                     }
                     break;
                 case  PROGRESS:
-                    int currentPosition = vv.getCurrentPosition();
+                    int currentPosition = (int) vv.getCurrentPosition();
                     seekbarVideo.setProgress(currentPosition);
 
                     tvCurrentTime.setText(utils.stringForTime(currentPosition));
@@ -436,7 +438,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
             public void onPrepared(MediaPlayer mp) {
                 VideoWidth = mp.getVideoWidth();
                 VideoHeight = mp.getVideoHeight();
-                int duration = vv.getDuration();
+                int duration = (int) vv.getDuration();
                 seekbarVideo.setMax(duration);
                 tvDuration.setText(utils.stringForTime(duration));
                 vv.start();
@@ -464,21 +466,6 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
     }
 
     private void startVitamioPlayer() {
-        if(vv != null) {
-            vv.stopPlayback();
-        }
-        Intent intent = new Intent(this, VitamVideoPlayerActivity.class);
-        if(mediaItems != null && mediaItems.size() > 0) {
-            Bundle bundler = new Bundle();
-            bundler.putSerializable("videolist",mediaItems);
-            intent.putExtra("position",position);
-            intent.putExtras(bundler);
-
-        }else if(uri != null) {
-            intent.setData(uri);
-        }
-        startActivity(intent);
-        finish();
     }
 
     private void setPreVideo() {
