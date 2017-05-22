@@ -5,11 +5,17 @@ import android.text.format.Formatter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.xutils.image.ImageOptions;
+import org.xutils.x;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import domain.MediaItem;
+import domain.MoveInfo;
 import svntest.mobileplayer.R;
 import utils.Utils.Utils;
 
@@ -19,13 +25,21 @@ import utils.Utils.Utils;
 
 public class NetVideoAdapter extends BaseAdapter {
     private final Context context;
-    private final ArrayList<MediaItem> datas;
+    private List<MoveInfo.TrailersBean> datas;
     private Utils utils;
+    private ImageOptions imageOptions;
 
-    public NetVideoAdapter(Context context, ArrayList<MediaItem> mediaItems) {
+    public NetVideoAdapter(Context context,List<MoveInfo.TrailersBean> datas) {
         this.context = context;
-        this.datas = mediaItems;
+        this.datas = datas;
         utils = new Utils();
+        imageOptions = new ImageOptions.Builder()
+                .setIgnoreGif(false)//是否忽略gif图。false表示不忽略。不写这句，默认是true
+                .setImageScaleType(ImageView.ScaleType.CENTER_CROP)
+                .setFailureDrawableId(R.drawable.video_default)
+                .setLoadingDrawableId(R.drawable.video_default)
+                .build();
+
     }
 
     @Override
@@ -34,7 +48,7 @@ public class NetVideoAdapter extends BaseAdapter {
     }
 
     @Override
-    public MediaItem getItem(int position) {
+    public MoveInfo.TrailersBean  getItem(int position) {
 
         return datas.get(position);
     }
@@ -58,14 +72,16 @@ public class NetVideoAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         //根据位置得到对应的数据
-        MediaItem mediaItem = datas.get(position);
-        viewHolder.tv_name.setText(mediaItem.getName());
-        viewHolder.tv_size.setText(Formatter.formatFileSize(context,mediaItem.getSize()));
-        viewHolder.tv_duration.setText(utils.stringForTime((int) mediaItem.getDuration()));
+        MoveInfo.TrailersBean trailersBean = datas.get(position);
+        viewHolder.tv_name.setText(trailersBean.getMovieName());
+        viewHolder.tv_size.setText(trailersBean.getVideoLength()+"秒");
+        viewHolder.tv_duration.setText(trailersBean.getVideoTitle());
+        x.image().bind(viewHolder.iv_icon, trailersBean.getCoverImg(),imageOptions);
 
         return convertView;
     }
     static class ViewHolder{
+        ImageView iv_icon;
         TextView tv_name;
         TextView tv_duration;
         TextView tv_size;
