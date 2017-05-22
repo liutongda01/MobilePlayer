@@ -37,7 +37,6 @@ import view.VideoView;
 /**
  * Created by Liutongda on 2017/5/19.
  */
-
 public class SystemVideoPlayerActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int PROGRESS = 0;
     private static final int HIDE_MEDIACONTROLLER = 1;
@@ -213,9 +212,9 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_system_video_player);
 
+        findViews();
         initData();
 
-        findViews();
         getData();
 
 
@@ -236,6 +235,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         uri = getIntent().getData();
         mediaItems = (ArrayList<MediaItem>)getIntent().getSerializableExtra("videolist");
         position = getIntent().getIntExtra("position",0);
+        setData();
     }
     private void initData() {
         utils = new Utils();
@@ -287,6 +287,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
             }
         });
 
+
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         screenHeight = metrics.heightPixels;
@@ -308,10 +309,34 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
             isMute = false;
         }
     }
+    private float dowY;
+    private int mVol;
+    private float touchRang;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         detector.onTouchEvent(event);
+        switch (event.getAction()) {
+            case  MotionEvent.ACTION_DOWN:
+                dowY = event.getY();
+                mVol = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+                touchRang = Math.min(screenHeight,screenWidth);
+                handler.removeMessages(HIDE_MEDIACONTROLLER);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                float endY = event.getY();
+                float distanceY = dowY - endY;
+                float delta = (distanceY/touchRang)*maxVoice;
+
+                if(delta != 0) {
+                    int mVoice = (int) Math.min(Math.max(mVol + delta,0),maxVoice);
+                    updateVoiceProgress(mVoice);
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,4000);
+                break;
+        }
         return super.onTouchEvent(event);
     }
     private boolean isShowMediaController = false;
@@ -333,12 +358,12 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
     }
 
     class MyBroadCastReceiver extends BroadcastReceiver {
-         @Override
-         public void onReceive(Context context, Intent intent) {
+        @Override
+        public void onReceive(Context context, Intent intent) {
             int level = intent.getIntExtra("level", 0);
-             Log.e("TAG","level=="+level);
-             setBatteryView(level);
-          }
+            Log.e("TAG","level=="+level);
+            setBatteryView(level);
+        }
     }
 
 
@@ -366,8 +391,8 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         vv.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-               // Toast.makeText(SystemVideoPlayerActivity.this, "视频播放完成", Toast.LENGTH_SHORT).show();
-               // finish();
+                // Toast.makeText(SystemVideoPlayerActivity.this, "视频播放完成", Toast.LENGTH_SHORT).show();
+                // finish();
                 setNextVideo();
             }
         });
@@ -415,7 +440,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         if(b) {
             btnPre.setBackgroundResource(R.drawable.btn_pre_selector);
             btnNext.setBackgroundResource(R.drawable.btn_next_selector);
-         }else {
+        }else {
             btnPre.setBackgroundResource(R.drawable.btn_pre_gray);
             btnNext.setBackgroundResource(R.drawable.btn_next_gray);
         }
@@ -457,3 +482,4 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         super.onDestroy();
     }
 }
+

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import activity.SystemVideoPlayerActivity;
+
 import adapter.LocalVideoAdapter;
 import domain.MediaItem;
 import fragment.BaseFragment;

@@ -23,11 +23,14 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask">
         </activity>
-        <activity android:name=".activity.SystemVideoPlayerActivity"
-             android:screenOrientation="landscape"
-             android:theme="@style/myStyle">
 
-        </activity>
+     <activity android:name="activity.SystemVideoPlayerActivity"
+         android:screenOrientation="landscape"
+
+         >
+
+
+     </activity>
     </application>
 
 </manifest>
