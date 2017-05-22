@@ -1,8 +1,10 @@
 package activity;
 
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
@@ -451,7 +453,7 @@ public class VitamVideoPlayerActivity extends AppCompatActivity implements View.
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
                // Toast.makeText(SystemVideoPlayerActivity.this, "播放出错了哦", Toast.LENGTH_SHORT).show();
-                startVitamioPlayer();
+                showErrorDialog();
                 return true;
             }
         });
@@ -465,8 +467,37 @@ public class VitamVideoPlayerActivity extends AppCompatActivity implements View.
         });
     }
 
-    private void startVitamioPlayer() {
+    private void showErrorDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("提示")
+                .setMessage("当前视频不可播放，请检查网络或者视频文件是否有损坏！")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .show();
     }
+
+    private void startVitamioPlayer() {
+        if(vv != null){
+            vv.stopPlayback();
+    }
+        Intent intent = new Intent(this, SystemVideoPlayerActivity.class);
+        if(mediaItems != null && mediaItems.size() >0){
+            Bundle bunlder = new Bundle();
+            bunlder.putSerializable("videolist",mediaItems);
+            intent.putExtra("position",position);
+            //放入Bundler
+            intent.putExtras(bunlder);
+        }else if(uri != null){
+            intent.setData(uri);
+        }
+        startActivity(intent);
+        finish();
+    }
+
 
     private void setPreVideo() {
         position--;
