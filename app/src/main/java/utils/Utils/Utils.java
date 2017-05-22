@@ -37,4 +37,13 @@ public String stringForTime(int timeMs) {
         }
     }
 
+        public boolean isNetUri(String data) {
+                boolean isNetUri = false;
+                if(data != null) {
+                    if(data.toLowerCase().startsWith("hettp")||data.toLowerCase().startsWith("mms")|| data.toLowerCase().startsWith("rtsp")) {
+                        isNetUri = true;
+                    }
+                }
+                return isNetUri;
+        }
 }
