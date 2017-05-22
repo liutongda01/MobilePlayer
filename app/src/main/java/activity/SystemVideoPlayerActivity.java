@@ -431,6 +431,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
                 tvDuration.setText(utils.stringForTime(duration));
                 vv.start();
                 handler.sendEmptyMessage(PROGRESS);
+                ll_loading.setVisibility(View.GONE);
                 hideMediaController();
             }
         });
@@ -455,6 +456,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         if(position > mediaItems.size()) {
             MediaItem mediaItem = mediaItems.get(position);
             isNetUri = utils.isNetUri(mediaItem.getData());
+            ll_loading.setVisibility(View.VISIBLE);
             vv.setVideoPath(mediaItem.getData());
             tvName.setText(mediaItem.getName());
 
@@ -468,6 +470,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         if(position < mediaItems.size()) {
             MediaItem mediaItem = mediaItems.get(position);
             isNetUri = utils.isNetUri(mediaItem.getData());
+            ll_loading.setVisibility(View.VISIBLE);
             vv.setVideoPath(mediaItem.getData());
             tvName.setText(mediaItem.getName());
 
