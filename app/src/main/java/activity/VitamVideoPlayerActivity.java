@@ -480,7 +480,7 @@ public class VitamVideoPlayerActivity extends AppCompatActivity implements View.
                 .show();
     }
 
-    private void startVitamioPlayer() {
+    private void  startSystemPlayer() {
         if(vv != null){
             vv.stopPlayback();
     }
