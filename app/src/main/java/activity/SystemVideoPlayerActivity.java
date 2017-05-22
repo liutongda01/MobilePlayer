@@ -459,8 +459,17 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
                 handler.sendEmptyMessage(PROGRESS);
                 ll_loading.setVisibility(View.GONE);
                 hideMediaController();
+                setVideoType(DEFUALT_SCREEN);
+                
+                if(vv.isPlaying()) {
+                    btnStartPause.setBackgroundResource(R.drawable.btn_pause_normal);
+                    
+                }else {
+                    btnStartPause.setBackgroundResource(R.drawable.btn_start_selector);
+                }
             }
         });
+        
         vv.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
