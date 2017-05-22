@@ -121,6 +121,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
 
         seekbarVideo.setMax(maxVoice);
         seekbarVideo.setProgress(currentVoice);
+        handler.sendEmptyMessage(SHOW_NET_SPEED);
     }
 
     @Override
@@ -203,6 +204,14 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
+                case SHOW_NET_SPEED:
+                    if(isNetUri) {
+                        String netSpeed = utils.getNetSpeed(SystemVideoPlayerActivity.this);
+                        tv_loading_net_speed.setText("正在加载中...."+netSpeed);
+                        tv_net_speed.setText("正在缓冲...."+netSpeed);
+                        sendEmptyMessageDelayed(SHOW_NET_SPEED,1000);
+                    }
+                    break;
                 case  PROGRESS:
                     int currentPosition = vv.getCurrentPosition();
                     seekbarVideo.setProgress(currentPosition);
