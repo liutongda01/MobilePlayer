@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -41,6 +42,7 @@ import view.VideoView;
 public class SystemVideoPlayerActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int PROGRESS = 0;
     private static final int HIDE_MEDIACONTROLLER = 1;
+    private  static  final int SHOW_NET_SPEED = 2;
     private static final int DEFUALT_SCREEN = 0;
     private static final int FULL_SCREEN = 1;
 
@@ -64,6 +66,10 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
     private Button btnStartPause;
     private Button btnNext;
     private Button btnSwitchScreen;
+    private LinearLayout ll_buffering;
+    private LinearLayout ll_loading;
+    private TextView tv_loading_net_speed;
+    private TextView tv_net_speed;
     private Utils utils;
     private MyBroadCastReceiver receiver;
     private int position;
@@ -79,7 +85,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
     private AudioManager am;
     private int maxVoice;
     private boolean isMute = false;
-    private boolean isNetUri;
+    private boolean isNetUri = true;
 
 
     private void findViews() {
@@ -101,7 +107,10 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         btnNext = (Button)findViewById( R.id.btn_next );
         btnSwitchScreen = (Button)findViewById( R.id.btn_switch_screen );
         vv = (VideoView)findViewById(R.id.vv);
-
+        ll_buffering = (LinearLayout) findViewById(R.id.ll_buffering);
+        tv_net_speed = (TextView) findViewById(R.id.tv_net_speed);
+        ll_loading = (LinearLayout)findViewById(R.id.ll_loading);
+        tv_loading_net_speed = (TextView)findViewById(R.id.tv_loading_net_speed);
         btnVoice.setOnClickListener( this );
         btnSwitchPlayer.setOnClickListener( this );
         btnExit.setOnClickListener( this );
@@ -187,6 +196,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
             btnStartPause.setBackgroundResource(R.drawable.btn_pause_selector);
         }
     }
+    private  int preCurrentPosition;
 
     private Handler handler = new Handler(){
         @Override
@@ -206,6 +216,15 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
                         seekbarVideo.setSecondaryProgress(secondaryProgress);
                     }else {
                         seekbarVideo.setSecondaryProgress(0);
+                    }
+                    if(isNetUri && vv.isPlaying()) {
+                        int duration = currentPosition - preCurrentPosition;
+                        if(duration < 500) {
+                            ll_buffering.setVisibility(View.VISIBLE);
+                        }else {
+                            ll_buffering.setVisibility(View.GONE);
+                        }
+                        preCurrentPosition = currentPosition;
                     }
                     sendEmptyMessageDelayed(PROGRESS,1000);
                     break;
@@ -299,6 +318,27 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
                 handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,4000);
             }
         });
+                //设置监听卡
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            vv.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+                @Override
+                public boolean onInfo(MediaPlayer mp, int what, int extra) {
+                    switch (what) {
+                        //拖动卡，缓存卡
+                        case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                            ll_buffering.setVisibility(View.VISIBLE);
+                            break;
+                        //拖动卡，缓存卡结束
+                        case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                            ll_buffering.setVisibility(View.GONE);
+                            break;
+                    }
+
+                    return true;
+                }
+            });
+        }
+
 
 
         DisplayMetrics metrics = new DisplayMetrics();
